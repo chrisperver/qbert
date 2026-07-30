@@ -9,6 +9,7 @@ drawbox_ptr2                      equ writelineplainf_ptr2+3
 scr_set_ink_ptr2                  equ drawbox_ptr2+3
 
 org &4000 ; WHEN ASIC IS DISABLED
+startofdataqbert2:
 
 ; JUMP TABLE FOR FUNCTIONS - STARTING AT &4000
 jp drawqbertlogo
@@ -1302,8 +1303,8 @@ largeletters:
         DB      #00, #00, #00, #00, #00, #00, #00, #00
         DB      #00, #00, #00, #00
 
+defb "CHRIS3"
 
-
-
+endofdataqbert2:
 
 ;enddata:
