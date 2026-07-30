@@ -24,7 +24,7 @@
 
 ;This is only a summary. All details are in Firmware Guide chapter 9, page 4. 
 
-;iscassetteloader equ 1 ; NEEDS TO BE HERE, RASM DOESN'T PROCESS THESE BEFORE COMPILATION
+;iscassette equ 1 ; NEEDS TO BE HERE, RASM DOESN'T PROCESS THESE BEFORE COMPILATION
 
 
 kl_rom_walk   equ &bccb
@@ -112,12 +112,12 @@ defb 0           ; 127
 
 org &0980
 
-ifdef iscassette
+ifdef ISCASSETTE
   ld bc,&f610		; cassette motor on
   out (c),c
 endif
 
-ifndef iscassette
+ifndef ISCASSETTE
   ;;------------------------------------------------------------------------
   ;; store the drive number the loader was run from
   ld hl,(&be7d)
@@ -160,25 +160,25 @@ endif
   call scr_set_ink
 
   ; LOADING SCREEN
-;  ld hl,picstr
-;  ld b,picstrl
-;  ld de,&C000
-;  ; LOAD FILE
-;  ld a,1
-;  call cas_noisy     ; DISABLE LOADING MESSAGES 
-;  push de
-;  call cas_in_open
-;  pop de
-;  ex de,hl
-;  call cas_in_direct
-;  call cas_in_close
+  ld hl,picstr
+  ld b,picstrl
+  ld de,&C000
+  ; LOAD FILE
+  ld a,1
+  call cas_noisy     ; DISABLE LOADING MESSAGES 
+  push de
+  call cas_in_open
+  pop de
+  ex de,hl
+  call cas_in_direct
+  call cas_in_close
 
   ; LOAD SECONDARY GAME CODE IN 4000
   ld hl,ohmummy1bin
   ld b,10
   ld de,&4100
   ; LOAD FILE
-  ld a,0;1
+  ld a,1
   call cas_noisy     ; DISABLE LOADING MESSAGES 
   push de
   call cas_in_open
@@ -231,7 +231,7 @@ remainderloadercode:
   ld hl,&0040 ; NAME
   ld b,10     ; STR LEN
   ld de,&4100
-  ld a,0;1
+  ld a,1
   call cas_noisy     ; DISABLE LOADING MESSAGES 
   push de
   call cas_in_open
@@ -249,7 +249,7 @@ remainderloadercode:
   ; FOLLOWING CODE IF ENABLED LOADS *3.BIN TO &4000 UNDER ASIC!
 ifdef enablethirdblock
   ld a,"3"
-  ld (&0045),a ; CHANGE FILENAME
+  ld (&0045),a ; CHANGE FILENAME FROM QBERT2 TO QBERT3
   ; LOAD THIRD GAME CODE TO 4000
   ld hl,&0040  ; NAME
   ld b,10      ; STR LEN
@@ -264,7 +264,7 @@ ifdef enablethirdblock
   call cas_in_close
 endif
 
-ifdef iscassette
+ifdef ISCASSETTE
   ld bc,&f600		; cassette motor off
   out (c),c
 endif
