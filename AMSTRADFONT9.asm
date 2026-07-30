@@ -12,6 +12,7 @@ scr_set_ink_ptr                  equ writelineplainf_ptr+3
 
 
 org &C100
+startofdataqbert3:
 
 ;align 256
 amsfonttable:
@@ -3369,5 +3370,6 @@ ret
 ;ifdef ISCART
 ;screenptrtable equ &EF00
 
+defb "CHRIS6"
 
-enddata:
+endofdataqbert3:
