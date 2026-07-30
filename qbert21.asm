@@ -1,13 +1,15 @@
 ifndef ISCART
-ifndef ISCASSETTE
+;ifndef ISCASSETTE
   read "spritegraphics.asm"    ; CODE 4000-7FFF
   ; TEST OUR OWN ROUTINES IN THE MAIN PROGRAM
   read "AMSTRADFONT9.asm"  ; CODE C100-FF00
+;endif
 endif
-endif
+
 
 org #0100
 nolist
+startofdataqbert1:
 
 jumptable equ &C200
 
@@ -135,14 +137,6 @@ image_coilysnake_backright_top_clip13 equ image_coilysnake_backright_top_clip12 
 
 ; DATA VARIABLES USED BY SUBMODULES
 musicstatus equ image_coilysnake_backright_top_clip13 + 2
-
-;qbertlogo equ drawlevelnumberempty + 3
-;image_torch equ qbertlogo + 3
-;image_key equ image_torch + 2
-;image_sarcophagus equ image_key + 2
-;image_scroll equ image_sarcophagus + 2
-;image_treasure equ image_scroll + 2
-;image_ankh equ image_treasure + 2
 
 ;screenptrtable    equ &F700
 ;my_data_objectmap equ &F900
@@ -5543,19 +5537,19 @@ checknpctype_playercollision_iy:
   ld a,(iy+ix_npctype)
   cp 4  ; GREEN BALL- HARMLESS, FREEZE ENEMIES, STOP SPAWN, RENDER HARMLESS, 100 POINTS, TIME LIMITED
   jr z,killnpc_iy_greenball
-  cp 5  ; SLICK - HARMLESS
+  cp 5  ; SLICK     - HARMLESS
   jp z,killsprite_iy
-  cp 6  ; SAM   - HARMLESS
+  cp 6  ; SAM       - HARMLESS
   jp z,killsprite_iy
   ; HIT A PURPLE OR RED SPRITE
   jr playercollision
 checknpctype_playercollision_ix:
   ld a,(ix+ix_npctype)
-  cp 4  ; GREEN BALL - HARMLESS, FREEZE ENEMIES, STOP SPAWN, RENDER HARMLESS, 100 POINTS
+  cp 4  ; GREEN BALL - HARMLESS, FREEZE ENEMIES, STOP SPAWN, RENDER HARMLESS, 100 POINTS, TIME LIMITED
   jr z,killnpc_ix_greenball
-  cp 5  ; SLICK - HARMLESS
+  cp 5  ; SLICK      - HARMLESS
   jp z,killsprite_ix
-  cp 6  ; SAM   - HARMLESS
+  cp 6  ; SAM        - HARMLESS
   jp z,killsprite_ix
   ; HIT A PURPLE OR RED SPRITE
 playercollision:
@@ -8110,7 +8104,7 @@ enablemusic_greenball:
   jr continueenablemusic
 enablemusic_newlevel:
   ld hl,firstinterruptspeed2-1    ; PASS LOCATION OF INTERRUPT SPEED TO FUNCTION
-  call playnewlevelmusic         ; CLEAR BUFFERS AND CHANNELS AND RESET MUSIC TO START OF SCORE
+  call playnewlevelmusic          ; CLEAR BUFFERS AND CHANNELS AND RESET MUSIC TO START OF SCORE
   jr continueenablemusic
 enablemusic_disk:
   ld hl,firstinterruptspeed2-1    ; PASS LOCATION OF INTERRUPT SPEED TO FUNCTION
@@ -8748,10 +8742,10 @@ my_txt_output_skipleadingzero_p2:
   
   ; PRINT ZERO AS WE AREN'T FIRST IN NUMBER
   ld a,"0"
-  jp writecharplainf;my_txt_output
+  jp writecharplainf
   outputspace:
   ld a," "
-  jp writecharplainf;my_txt_output
+  jp writecharplainf
   
 my_txt_output:
   ld de,(currenttxtpos)
@@ -9762,12 +9756,12 @@ testkeyright:
   ld a,(hl)
   bit 3,a:testkeybitcommandright
 ret
-testkeyfire:
+testkeyfire2: ; BUTTONS 1 AND 2 ARE SWAPPED ON GX4000 PAD ;testkeyfire:
   ld hl,matrix_buffer+9:testkeybuffercommandfire
   ld a,(hl)
   bit 5,a:testkeybitcommandfire
 ret
-testkeyfire2:
+testkeyfire: ; BUTTONS 1 AND 2 ARE SWAPPED ON GX4000 PAD ;testkeyfire2:
   ld hl,matrix_buffer+9:testkeybuffercommandfire2
   ld a,(hl)
   bit 4,a:testkeybitcommandfire2
@@ -9812,11 +9806,14 @@ ret
 
 defb "CHRIS2"  ; AROUND 3F90
 
+endofdataqbert1:
+
 ; DATA BUFFER FOR SPEECH ROM
 ; NEED TO POINT IY TO THIS BEFORE WE CALL COMMANDS TO SPEAK
 ; IX NEEDS TO BE PTR TO STRING TO SPEAK
 ;speechimturnedon: defb "HELLO. I'M TURNED ON",10,13,0
 speechdatabuffer: ds 235
+
 
 ; DISK COMPILATION MUST COMPILE ENTIRE PROJECT TO BE ABLE TO INSERT CONTENTS IN DISK HERE
 ; CARTRIDGE AND CASETTE COMPILATION CAN BE DONE SEPARATELY
@@ -9825,14 +9822,15 @@ ifndef ISCART
 ifndef ISCASSETTE
 ;defb "CHRIS4"
 ; RASM INSERT INTO DSK
-SAVE "QBERT3.BIN",&4000,&3B00,DSK,"../compile/build/QBert.dsk" ; LEAVE SPACE FOR FIRMWARE SO IT IS NOT OVERWRITTEN- WE NEED FOR CASETTE LOADING
-SAVE "QBERT1.BIN",&0100,&3EFF,DSK,"../compile/build/QBert.dsk"
-SAVE "QBERT2.BIN",&C100,&3EFF,DSK,"../compile/build/QBert.dsk" ; LEAVE 100 FOR THE STACK FOR LOADER!
+SAVE "QBERT3.BIN",startofdataqbert2,endofdataqbert2-startofdataqbert2,DSK,"../compile/build/QBert.dsk" ; LEAVE SPACE FOR FIRMWARE SO IT IS NOT OVERWRITTEN- WE NEED FOR CASETTE LOADING
+SAVE "QBERT1.BIN",startofdataqbert1,endofdataqbert1-startofdataqbert1,DSK,"../compile/build/QBert.dsk"
+SAVE "QBERT2.BIN",startofdataqbert3,endofdataqbert3-startofdataqbert3,DSK,"../compile/build/QBert.dsk" ; LEAVE 100 FOR THE STACK FOR LOADER!
 
 endif
-;ifdef ISCASSETTE
-;save "QBERT3.BIN",&4000,&3B00 ; LEAVE SPACE FOR FIRMWARE SO IT IS NOT OVERWRITTEN - WE NEED FOR CASETTE LOADING
-;save "QBERT2.BIN",&C100,&3EFF ; LEAVE 100 FOR THE STACK FOR LOADER!
-;SAVE "QBERT1.BIN",&0100,&3EFF
+endif
+ifdef ISCASSETTE
+SAVE "QBERT3.BIN",startofdataqbert2,endofdataqbert2-startofdataqbert2;&3B00 ; LEAVE SPACE FOR FIRMWARE SO IT IS NOT OVERWRITTEN - WE NEED FOR CASETTE LOADING
+SAVE "QBERT1.BIN",startofdataqbert1,endofdataqbert1-startofdataqbert1;&3EFF
+SAVE "QBERT2.BIN",startofdataqbert3,endofdataqbert3-startofdataqbert3;&C100,&3EFF ; LEAVE 100 FOR THE STACK FOR LOADER!
 ;endif
 endif
